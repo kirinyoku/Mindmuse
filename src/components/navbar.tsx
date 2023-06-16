@@ -8,7 +8,7 @@ import { signIn, signOut, useSession, getProviders } from 'next-auth/react';
 interface NavbarProps {}
 
 const Navbar: FC<NavbarProps> = ({}) => {
-  const isUserLoggedIn = true;
+  const { data: session } = useSession();
 
   const [providers, setProviders] = useState<any>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -33,7 +33,7 @@ const Navbar: FC<NavbarProps> = ({}) => {
         <p className="logo_text">MindMuse</p>
       </Link>
       <div className="sm:flex hidden">
-        {isUserLoggedIn ? (
+        {session?.user ? (
           <div className="flex gap-3 md:gap-5">
             <Link href="/create-post" className="black_btn">
               Create Post
@@ -43,7 +43,7 @@ const Navbar: FC<NavbarProps> = ({}) => {
             </button>
             <Link href="/profile">
               <Image
-                src="logo.svg"
+                src={session?.user?.image || '/pp_placeholder.png'}
                 alt="user profile picture"
                 width={37}
                 height={37}
@@ -67,10 +67,10 @@ const Navbar: FC<NavbarProps> = ({}) => {
         )}
       </div>
       <div className="sm:hidden flex relative">
-        {isUserLoggedIn ? (
+        {session?.user ? (
           <div className="flex">
             <Image
-              src="logo.svg"
+              src={session?.user?.image || '/pp_placeholder.png'}
               alt="user profile picture"
               width={37}
               height={37}
