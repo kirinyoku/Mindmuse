@@ -15,7 +15,7 @@ const handler = NextAuth({
       // store the user id from MongoDB to session
       const sessionUser = await User.findOne({ email: session?.user?.email });
 
-      // session?.user?.id = sessionUser._id.toString();
+      (session.user as any).id = sessionUser._id.toString();
 
       return session;
     },
@@ -31,7 +31,8 @@ const handler = NextAuth({
           await User.create({
             email: profile?.email,
             username: profile?.name?.replace(' ', '').toLowerCase(),
-            image: profile?.image,
+            // @ts-expect-error
+            image: profile.picture,
           });
         }
 

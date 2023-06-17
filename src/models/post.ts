@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, models } from 'mongoose';
+import { Schema, model, models } from 'mongoose';
 
 const PostSchema = new Schema({
   prompt: {
@@ -10,7 +10,7 @@ const PostSchema = new Schema({
     require: [true, 'Tags is required.'],
   },
   author: {
-    type: String,
+    type: Schema.Types.ObjectId,
     ref: 'User',
   },
 });

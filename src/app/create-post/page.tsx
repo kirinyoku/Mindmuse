@@ -17,7 +17,11 @@ const Page: FC<PageProps> = ({}) => {
   const [post, setPost] = useState<Post>({
     prompt: '',
     tags: '',
-    author: '',
+    author: {
+      email: '',
+      username: '',
+      image: '',
+    },
   });
 
   const createPost = async (event: FormEvent<HTMLFormElement>) => {
@@ -30,7 +34,8 @@ const Page: FC<PageProps> = ({}) => {
         body: JSON.stringify({
           prompt: post.prompt,
           tags: post.tags,
-          author: session?.user?.email,
+          // @ts-expect-error
+          author: session?.user?.id,
         }),
       });
 
