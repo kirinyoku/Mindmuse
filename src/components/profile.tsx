@@ -4,7 +4,7 @@ import Card from './card';
 interface ProfileProps {
   name: string;
   desc: string;
-  posts: Post[] | null;
+  posts: Post[] | undefined;
   handleEdit: (post: Post) => void;
   handleDelete: (post: Post) => Promise<void>;
 }

@@ -4,7 +4,7 @@ import { Dispatch, FC, FormEvent, SetStateAction } from 'react';
 interface FormProps {
   type: string;
   post: Post;
-  setPost: Dispatch<SetStateAction<Post>>;
+  setPost: Dispatch<SetStateAction<Post | undefined>>;
   submitting: boolean;
   handleSubmit: (event: FormEvent<HTMLFormElement>) => Promise<void>;
 }

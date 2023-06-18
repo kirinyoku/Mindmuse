@@ -14,15 +14,7 @@ const Page: FC<PageProps> = ({}) => {
   const { data: session } = useSession();
 
   const [submitting, setSubmitting] = useState<boolean>(false);
-  const [post, setPost] = useState<Post>({
-    prompt: '',
-    tags: '',
-    author: {
-      email: '',
-      username: '',
-      image: '',
-    },
-  });
+  const [post, setPost] = useState<Post | undefined>();
 
   const createPost = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -32,10 +24,9 @@ const Page: FC<PageProps> = ({}) => {
       const reponse = await fetch('/api/post/new', {
         method: 'POST',
         body: JSON.stringify({
-          prompt: post.prompt,
-          tags: post.tags,
-          // @ts-expect-error
-          author: session?.user?.id,
+          prompt: post?.prompt,
+          tags: post?.tags,
+          author: (session?.user as User).id,
         }),
       });
 
@@ -50,13 +41,17 @@ const Page: FC<PageProps> = ({}) => {
   };
 
   return (
-    <Form
-      type="create"
-      post={post}
-      setPost={setPost}
-      submitting={submitting}
-      handleSubmit={createPost}
-    />
+    <>
+      {post && (
+        <Form
+          type="create"
+          post={post}
+          setPost={setPost}
+          submitting={submitting}
+          handleSubmit={createPost}
+        />
+      )}
+    </>
   );
 };
 export default Page;

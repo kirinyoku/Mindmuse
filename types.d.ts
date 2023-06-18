@@ -1,12 +1,12 @@
 interface Post {
-  _id: string;
+  _id?: string;
   prompt: string;
   tags: string;
-  author: User;
+  author?: User;
 }
 
 interface User {
-  id: string;
+  id?: string;
   email: string;
   username: string;
   image: string;
