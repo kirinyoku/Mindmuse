@@ -12,7 +12,7 @@ interface PostListProps {
 
 const PostList: FC<PostListProps> = ({ data, handleClick }) => {
   return (
-    <div className="mt-16 prompt_layout">
+    <div className="mt-8 prompt_layout">
       {data.map((post) => (
         <Card key={post._id} post={post} />
       ))}
@@ -25,34 +25,73 @@ const PostList: FC<PostListProps> = ({ data, handleClick }) => {
 interface FeedProps {}
 
 const Feed: FC<FeedProps> = ({}) => {
-  const [search, setSearch] = useState('');
-  const [posts, setPosts] = useState([]);
+  const [searchText, setSearchText] = useState<string>('');
+  const [searchedResult, setSearchedResult] = useState<Post[]>([]);
+  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout>();
 
-  const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {};
+  const [posts, setPosts] = useState<Post[]>([]);
+
+  const filterPosts = (searchText: string) => {
+    const regExp = new RegExp(searchText, 'i');
+    return posts.filter(
+      (post) =>
+        regExp.test(post?.author?.username as string) ||
+        regExp.test(post.prompt) ||
+        regExp.test(post.tags),
+    );
+  };
+
+  const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
+    clearTimeout(searchTimeout);
+    setSearchText(event.target.value);
+
+    setSearchTimeout(
+      setTimeout(() => {
+        const searchResult = filterPosts(event.target.value);
+        setSearchedResult(searchResult);
+      }, 500),
+    );
+  };
+
+  const handleTagSearch = (tag: string) => {
+    setSearchText(tag);
+    const searchResult = filterPosts(tag);
+    setSearchedResult(searchResult);
+  };
+
+  const fetchPosts = async () => {
+    const response = await fetch('/api/post');
+    const data = await response.json();
+    setPosts(data);
+  };
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      const response = await fetch('/api/post');
-      const data = await response.json();
-      setPosts(data);
-    };
-
     fetchPosts();
   }, []);
 
   return (
     <section className="feed">
-      <form className="relative w-full flex-center">
+      <div className="relative w-full flex-center">
         <input
           type="text"
           placeholder="Search for a tag or a username"
-          value={search}
+          value={searchText}
           onChange={handleSearch}
           required
           className="search_input peer"
         />
-      </form>
-      <PostList data={posts} handleClick={() => {}} />
+      </div>
+      {searchText ? (
+        searchedResult.length > 0 ? (
+          <PostList data={searchedResult} handleClick={() => {}} />
+        ) : (
+          <p className="font-satoshi font-bold text-2xl text-slate-800 mt-4 capitalize">
+            Prompt font found
+          </p>
+        )
+      ) : (
+        <PostList data={posts} handleClick={() => {}} />
+      )}
     </section>
   );
 };

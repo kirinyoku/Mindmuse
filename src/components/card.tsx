@@ -9,9 +9,10 @@ interface CardProps {
   post: Post;
   handleEdit?: (post: Post) => void;
   handleDelete?: (post: Post) => Promise<void>;
+  handleTagSearch: (tga: string) => void;
 }
 
-const Card: FC<CardProps> = ({ post, handleEdit, handleDelete }) => {
+const Card: FC<CardProps> = ({ post, handleEdit, handleDelete, handleTagSearch }) => {
   const router = useRouter();
   const pathName = usePathname();
   const { data: session } = useSession();
@@ -55,12 +56,11 @@ const Card: FC<CardProps> = ({ post, handleEdit, handleDelete }) => {
       <p className="my-4 font-satoshi text-sm text-slate-700">{post.prompt}</p>
       <p
         className="font-inter text-sm blue_gradient cursor-pointer"
-        // @ts-expect-error*
-        onClick={() => handleClick && handleTagClick(post.tags)}>
+        onClick={() => handleTagSearch && handleTagSearch(post.tags)}>
         {post.tags}
       </p>
       {/* @ts-expect-error*/}
-      {(session?.user as User).id === post?.author?._id && pathName === '/profile' && (
+      {(session?.user as User)?.id === post?.author?._id && pathName === '/profile' && (
         <div className="mt-5 flex-end gap-4 border-t border-slate-100">
           <button
             className="font-inter text-base green_gradient cursor_pointer"
