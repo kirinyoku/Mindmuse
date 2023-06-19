@@ -7,9 +7,9 @@ import { usePathname, useRouter } from 'next/navigation';
 
 interface CardProps {
   post: Post;
-  handleEdit?: (post: Post) => void;
-  handleDelete?: (post: Post) => Promise<void>;
-  handleTagSearch: (tga: string) => void;
+  handleEdit?: (post: Post) => void | undefined;
+  handleDelete?: (post: Post) => Promise<void> | undefined;
+  handleTagSearch?: (tga: string) => void | undefined;
 }
 
 const Card: FC<CardProps> = ({ post, handleEdit, handleDelete, handleTagSearch }) => {
@@ -18,6 +18,14 @@ const Card: FC<CardProps> = ({ post, handleEdit, handleDelete, handleTagSearch }
   const { data: session } = useSession();
 
   const [copiedPrompt, setCopiedPrompt] = useState('');
+
+  const handleProfileClick = () => {
+    if (post.author?._id === (session?.user as User)?.id) {
+      return router.push('/profile');
+    } else {
+      router.push(`/profile/${post.author?._id}?name=${post.author?.username}`);
+    }
+  };
 
   const handleCopy = () => {
     setCopiedPrompt(post.prompt);
@@ -31,7 +39,9 @@ const Card: FC<CardProps> = ({ post, handleEdit, handleDelete, handleTagSearch }
   return (
     <div className="post_card">
       <div className="flex justify-between items-start gap-5">
-        <div className="flex-1 flex justify-start items-center gap-3 cursor-pointer">
+        <div
+          className="flex-1 flex justify-start items-center gap-3 cursor-pointer"
+          onClick={handleProfileClick}>
           <Image
             src={post?.author?.image as string}
             alt="user profile picture"
@@ -59,7 +69,6 @@ const Card: FC<CardProps> = ({ post, handleEdit, handleDelete, handleTagSearch }
         onClick={() => handleTagSearch && handleTagSearch(post.tags)}>
         {post.tags}
       </p>
-      {/* @ts-expect-error*/}
       {(session?.user as User)?.id === post?.author?._id && pathName === '/profile' && (
         <div className="mt-5 flex-end gap-4 border-t border-slate-100">
           <button

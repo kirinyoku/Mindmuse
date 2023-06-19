@@ -13,8 +13,8 @@ const Page: FC<PageProps> = ({}) => {
   const router = useRouter();
   const { data: session } = useSession();
 
+  const [post, setPost] = useState<Post>({ prompt: '', tags: '' });
   const [submitting, setSubmitting] = useState<boolean>(false);
-  const [post, setPost] = useState<Post | undefined>();
 
   const createPost = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -42,15 +42,13 @@ const Page: FC<PageProps> = ({}) => {
 
   return (
     <>
-      {post && (
-        <Form
-          type="create"
-          post={post}
-          setPost={setPost}
-          submitting={submitting}
-          handleSubmit={createPost}
-        />
-      )}
+      <Form
+        type="create"
+        post={post}
+        setPost={setPost}
+        submitting={submitting}
+        handleSubmit={createPost}
+      />
     </>
   );
 };

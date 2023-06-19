@@ -38,7 +38,7 @@ const Navbar: FC<NavbarProps> = ({}) => {
             <Link href="/create-post" className="black_btn">
               Create Post
             </Link>
-            <button type="button" onClick={() => signOut} className="outline_btn">
+            <button type="button" onClick={() => signOut()} className="outline_btn">
               Sign Out
             </button>
             <Link href="/profile">

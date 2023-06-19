@@ -2,7 +2,12 @@ interface Post {
   _id?: string;
   prompt: string;
   tags: string;
-  author?: User;
+  author?: {
+    _id?: string;
+    email: string;
+    username: string;
+    image: string;
+  };
 }
 
 interface User {

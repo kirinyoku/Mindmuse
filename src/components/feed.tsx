@@ -7,14 +7,14 @@ import { FC, useState, useEffect, ChangeEvent } from 'react';
 
 interface PostListProps {
   data: Post[];
-  handleClick: () => void;
+  handleTagSearch: (tga: string) => void;
 }
 
-const PostList: FC<PostListProps> = ({ data, handleClick }) => {
+const PostList: FC<PostListProps> = ({ data, handleTagSearch }) => {
   return (
     <div className="mt-8 prompt_layout">
       {data.map((post) => (
-        <Card key={post._id} post={post} />
+        <Card key={post._id} post={post} handleTagSearch={handleTagSearch} />
       ))}
     </div>
   );
@@ -83,14 +83,14 @@ const Feed: FC<FeedProps> = ({}) => {
       </div>
       {searchText ? (
         searchedResult.length > 0 ? (
-          <PostList data={searchedResult} handleClick={() => {}} />
+          <PostList data={searchedResult} handleTagSearch={handleTagSearch} />
         ) : (
           <p className="font-satoshi font-bold text-2xl text-slate-800 mt-4 capitalize">
             Prompt font found
           </p>
         )
       ) : (
-        <PostList data={posts} handleClick={() => {}} />
+        <PostList data={posts} handleTagSearch={handleTagSearch} />
       )}
     </section>
   );
