@@ -1,15 +1,31 @@
 import Link from 'next/link';
-import { Dispatch, FC, FormEvent, SetStateAction } from 'react';
+import { ChangeEvent, Dispatch, FC, FormEvent, SetStateAction } from 'react';
 
 interface FormProps {
   type: string;
   post: Post;
-  setPost: Dispatch<SetStateAction<Post | undefined>>;
+  setPost: Dispatch<SetStateAction<Post>>;
   submitting: boolean;
   handleSubmit: (event: FormEvent<HTMLFormElement>) => Promise<void>;
 }
 
 const Form: FC<FormProps> = ({ type, post, setPost, submitting, handleSubmit }) => {
+  const handleTagsChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    const words = value.split(' ');
+
+    const taggedWords = words.map((word) => {
+      if (!word.match(/^#/)) {
+        return `#${word}`;
+      }
+      return word;
+    });
+
+    const updatedValue = taggedWords.join(' ');
+
+    setPost({ ...post, tags: updatedValue });
+  };
+
   return (
     <section className="w-full max-w-full flex-start flex-col">
       <h1 className="capitalize head_text text-left">
@@ -38,7 +54,7 @@ const Form: FC<FormProps> = ({ type, post, setPost, submitting, handleSubmit }) 
           <span className="font-satoshi font-semibold text-base text-slate-700">Tags</span>
           <input
             value={post.tags}
-            onChange={(e) => setPost({ ...post, tags: e.target.value })}
+            onChange={handleTagsChange}
             placeholder="#tags"
             required
             className="form_input"
