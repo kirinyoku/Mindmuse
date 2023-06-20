@@ -3,6 +3,7 @@
 import { Session } from 'next-auth';
 import { FC, ReactNode } from 'react';
 import { SessionProvider } from 'next-auth/react';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 
 interface ProviderProps {
   children: ReactNode;
@@ -10,7 +11,13 @@ interface ProviderProps {
 }
 
 const Provider: FC<ProviderProps> = ({ children, session }) => {
-  return <SessionProvider session={session}>{children}</SessionProvider>;
+  const client = new QueryClient();
+
+  return (
+    <SessionProvider session={session}>
+      <QueryClientProvider client={client}>{children}</QueryClientProvider>
+    </SessionProvider>
+  );
 };
 
 export default Provider;

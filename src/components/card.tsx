@@ -64,11 +64,16 @@ const Card: FC<CardProps> = ({ post, handleEdit, handleDelete, handleTagSearch }
         </div>
       </div>
       <p className="my-4 font-satoshi text-sm text-slate-700">{post.prompt}</p>
-      <p
-        className="font-inter text-sm blue_gradient cursor-pointer"
-        onClick={() => handleTagSearch && handleTagSearch(post.tags)}>
-        {post.tags}
-      </p>
+      <div className="flex gap-2">
+        {post.tags.split(' ').map((tag) => (
+          <span
+            key={tag}
+            onClick={() => handleTagSearch && handleTagSearch(tag)}
+            className="cursor-pointer font-inter text-sm blue_gradient">
+            {tag}
+          </span>
+        ))}
+      </div>
       {(session?.user as User)?.id === post?.author?._id && pathName === '/profile' && (
         <div className="mt-5 flex-end gap-4 border-t border-slate-100">
           <button
