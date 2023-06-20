@@ -1,11 +1,11 @@
 'use client';
 
-import { FC, FormEvent, useEffect } from 'react';
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { FC, FormEvent, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import Form from '@/components/form';
+import { useMutationUpdatePost, useQueryPostById } from '@/lib/queries';
 
 interface PageProps {}
 
@@ -16,24 +16,21 @@ const Page: FC<PageProps> = () => {
   const postId = searchParams.get('id');
 
   const [submitting, setSubmitting] = useState<boolean>(false);
-  const [post, setPost] = useState<Post | undefined>(undefined);
+  const [post, setPost] = useState<Post>({ prompt: '', tags: '' });
+
+  const { mutate: updatePost } = useMutationUpdatePost(postId as string);
+  const { data, isSuccess, isLoading } = useQueryPostById(postId as string);
 
   useEffect(() => {
-    const getPostById = async () => {
-      const response = await fetch(`/api/post/${postId}`);
-      const post: Post = await response.json();
+    if (!isLoading && isSuccess) {
       setPost({
-        prompt: post.prompt,
-        tags: post.tags,
+        prompt: data.prompt,
+        tags: data.tags,
       });
-    };
-
-    if (postId) {
-      getPostById();
     }
   }, [postId]);
 
-  const updatePost = async (event: FormEvent<HTMLFormElement>) => {
+  const handleUpdate = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSubmitting(true);
 
@@ -41,23 +38,17 @@ const Page: FC<PageProps> = () => {
       return alert('Post ID not found.');
     }
 
-    try {
-      const reponse = await fetch(`/api/post/${postId}`, {
-        method: 'PATCH',
-        body: JSON.stringify({
-          prompt: post?.prompt,
-          tags: post?.tags,
-        }),
-      });
-
-      if (reponse.ok) {
-        router.push('/');
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setSubmitting(false);
-    }
+    updatePost(
+      {
+        prompt: post?.prompt,
+        tags: post?.tags,
+      },
+      {
+        onSuccess: () => router.push('/'),
+        onError: (error) => console.log(error),
+        onSettled: () => setSubmitting(false),
+      },
+    );
   };
 
   return (
@@ -68,7 +59,7 @@ const Page: FC<PageProps> = () => {
           post={post}
           setPost={setPost}
           submitting={submitting}
-          handleSubmit={updatePost}
+          handleSubmit={handleUpdate}
         />
       )}
     </>

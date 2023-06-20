@@ -1,7 +1,8 @@
 'use client';
 
+import { useQueryPosts } from '@/lib/queries';
 import Card from './card';
-import { FC, useState, useEffect, ChangeEvent } from 'react';
+import { FC, useState, ChangeEvent } from 'react';
 
 // ------------PostList------------
 
@@ -29,16 +30,18 @@ const Feed: FC<FeedProps> = ({}) => {
   const [searchedResult, setSearchedResult] = useState<Post[]>([]);
   const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout>();
 
-  const [posts, setPosts] = useState<Post[]>([]);
+  const { data: posts, isSuccess, isLoading } = useQueryPosts();
 
   const filterPosts = (searchText: string) => {
     const regExp = new RegExp(searchText, 'i');
-    return posts.filter(
-      (post) =>
-        regExp.test(post?.author?.username as string) ||
-        regExp.test(post.prompt) ||
-        regExp.test(post.tags),
-    );
+    if (!isLoading && isSuccess) {
+      return posts.filter(
+        (post) =>
+          regExp.test(post?.author?.username as string) ||
+          regExp.test(post.prompt) ||
+          regExp.test(post.tags),
+      );
+    }
   };
 
   const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
@@ -48,7 +51,9 @@ const Feed: FC<FeedProps> = ({}) => {
     setSearchTimeout(
       setTimeout(() => {
         const searchResult = filterPosts(event.target.value);
-        setSearchedResult(searchResult);
+        if (searchResult) {
+          setSearchedResult(searchResult);
+        }
       }, 500),
     );
   };
@@ -56,18 +61,10 @@ const Feed: FC<FeedProps> = ({}) => {
   const handleTagSearch = (tag: string) => {
     setSearchText(tag);
     const searchResult = filterPosts(tag);
-    setSearchedResult(searchResult);
+    if (searchResult) {
+      setSearchedResult(searchResult);
+    }
   };
-
-  const fetchPosts = async () => {
-    const response = await fetch('/api/post');
-    const data = await response.json();
-    setPosts(data);
-  };
-
-  useEffect(() => {
-    fetchPosts();
-  }, []);
 
   return (
     <section className="feed">
@@ -90,7 +87,9 @@ const Feed: FC<FeedProps> = ({}) => {
           </p>
         )
       ) : (
-        <PostList data={posts} handleTagSearch={handleTagSearch} />
+        <>
+          {!isLoading && isSuccess && <PostList data={posts} handleTagSearch={handleTagSearch} />}
+        </>
       )}
     </section>
   );
