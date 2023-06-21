@@ -63,26 +63,26 @@ const Card: FC<CardProps> = ({ post, handleEdit, handleDelete, handleTagSearch }
           />
         </div>
       </div>
-      <p className="my-4 font-satoshi text-sm text-slate-700">{post.prompt}</p>
+      <p className="mt-4 mb-2 font-satoshi text-sm text-slate-700">{post.prompt}</p>
       <div className="flex gap-2">
         {post.tags.split(' ').map((tag) => (
           <span
             key={tag}
             onClick={() => handleTagSearch && handleTagSearch(tag)}
-            className="cursor-pointer font-inter text-sm blue_gradient">
+            className="cursor-pointer font-inter text-base text-blue-500">
             {tag}
           </span>
         ))}
       </div>
       {(session?.user as User)?.id === post?.author?._id && pathName === '/profile' && (
-        <div className="mt-5 flex-end gap-4 border-t border-slate-100">
+        <div className="mt-2 pt-1 flex-end gap-4 border-t border-slate-100">
           <button
-            className="font-inter text-base green_gradient cursor_pointer"
+            className="font-inter text-base text-slate-800 cursor_pointer"
             onClick={handleEdit as MouseEventHandler<HTMLButtonElement> | undefined}>
             Edit
           </button>
           <button
-            className="font-inter text-base orange_gradient cursor_pointer"
+            className="font-inter text-base text-red-600 cursor_pointer"
             onClick={handleDelete as MouseEventHandler<HTMLButtonElement> | undefined}>
             Delete
           </button>
